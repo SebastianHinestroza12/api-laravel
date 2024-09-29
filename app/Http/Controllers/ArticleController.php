@@ -4,23 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ArticleCollection;
 use App\Http\Resources\ArticleResource;
+use App\JsonApi\Traits\AppliesQueryModifiers;
 use App\Models\Article;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
+    use AppliesQueryModifiers;
     /**
      * Display a listing of the resource.
      */
     public function index(): ArticleCollection
     {
-        $allArticles = Article::all();
-        // return ArticleResource::make($allArticles);
-        // return ArticleResource::collection(Article::paginate(10));
-        // return response()->json(ArticleResource::collection(Article::paginate(10)));
+        $query = Article::query();
 
-        //Resources
-        // return ArticleResource::collection($allArticles);
+        $this->applySorting($query);
+        $this->applyFilters($query);
+        $allArticles = $query->get();
 
         //Collection
         return ArticleCollection::make($allArticles);
